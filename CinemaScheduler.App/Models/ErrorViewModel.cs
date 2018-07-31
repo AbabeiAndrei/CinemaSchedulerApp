@@ -1,4 +1,6 @@
-﻿namespace CinemaScheduler.Models
+using System;
+
+namespace CinemaScheduler.App.Models
 {
     public class ErrorViewModel
     {
