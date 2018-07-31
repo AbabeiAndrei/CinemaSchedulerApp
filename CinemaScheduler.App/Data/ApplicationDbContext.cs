@@ -13,27 +13,10 @@ namespace CinemaScheduler.App.Data
     [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
     public class ApplicationDbContext : IdentityDbContext, IApplicationDbContext
     {
-        /// <inheritdoc />
-        public ApplicationDbContext()
-        {
-        }
-
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
+                : base(options)
         {
         }
-
-        #region Overrides of DbContext
-
-        /// <inheritdoc />
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-
-            optionsBuilder.UseMySql("server=localhost;database=cinema;user=cinema;password=cinema");
-        }
-
-        #endregion
 
         #region Overrides of IdentityDbContext<IdentityUser,IdentityRole,string,IdentityUserClaim<string>,IdentityUserRole<string>,IdentityUserLogin<string>,IdentityRoleClaim<string>,IdentityUserToken<string>>
 
