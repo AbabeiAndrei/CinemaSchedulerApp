@@ -1,0 +1,33 @@
+﻿body {
+    background-color: white
+}
+
+.public-title {
+    margin-top: 40px
+}
+
+.public-title, .public-container {
+    position: relative;
+    width: 600px;
+    margin-left: 300px;
+}
+
+.public-container {
+    -ms-border-radius: 10px;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding: 30px 60px;
+    border: #e7e7e7 solid 1px;
+    background-color: #f8f8f8;
+}
+.public-container .title {
+    margin-bottom: 20px;
+}
+.validation-summary-errors ul { 
+     list-style: none;
+     margin-left:-40px
+ }
+
+.submit-btn {
+    float: right
+}

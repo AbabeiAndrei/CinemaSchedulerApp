@@ -42,7 +42,7 @@ namespace CinemaScheduler.App.Controllers
             if (result.Succeeded) 
                 return RedirectToAction("Index", "Cinema");
 
-            ModelState.AddModelError(ModelErrorKeys.IncorectUserOrPass, "Username or password is incorect");
+            ModelState.AddModelError(string.Empty, "Username or password is incorect");
             return View();
         }
         
