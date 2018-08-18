@@ -35,3 +35,26 @@ body {
         display: none;
     }
 }
+
+.row-header {
+    padding-right: 16px
+}
+
+.screen {
+    background-color: black;
+    color: white;
+    text-align: center;
+    margin: 8px;
+}
+
+.seatsMap {
+    margin-left: 32px;
+}
+
+.seat {
+    margin: 2px
+}
+
+.seat > input[type="radio"] {
+    display: none
+}

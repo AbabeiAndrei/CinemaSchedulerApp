@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using CinemaScheduler.App.Data;
 using CinemaScheduler.App.Services;
+using CinemaScheduler.App.Entities.Repository;
 using CinemaScheduler.App.Services.Interfaces;
 
 namespace CinemaScheduler.App
@@ -36,15 +37,18 @@ namespace CinemaScheduler.App
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseMySql(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseLazyLoadingProxies();
+            });
             
             services.AddDefaultIdentity<IdentityUser>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders();
 
-            services.AddTransient<ISeeder, DbSeeder>();
-            services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
-            
+            BuildServiceInjections(services);
+
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings
@@ -79,6 +83,20 @@ namespace CinemaScheduler.App
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+        }
+
+        private static void BuildServiceInjections(IServiceCollection services)
+        {
+            const string apikey = "852d9df5";
+
+            services.AddTransient<ISeeder, DbSeeder>();
+            services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
+            
+            services.AddTransient<IImdbService, ImdbService>(provider => new ImdbService(apikey));
+
+            services.AddTransient<IMovieRepository, MovieRepository>();
+            services.AddTransient<IMovieScheduleRepository, MovieScheduleRepository>();
+            services.AddTransient<ICitiesRepository, CitiesRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

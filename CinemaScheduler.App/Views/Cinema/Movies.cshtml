@@ -1,45 +1,83 @@
-﻿@model IEnumerable<CinemaScheduler.App.Entities.MovieSchedule>
+﻿@model MoviesViewModel
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<table class="table">
+    <tr>
+        <td>Oras</td>
+        <td>
+            @Html.DropDownListFor(model => model.SelectedCity, 
+                                  Model.Cities.Select(city => new SelectListItem(city.Name, city.Id.ToString())))
+        </td>
+        <td>Cinema</td>
+        <td>
+            @Html.DropDownListFor(model => model.SelectedCinema,
+                                  Model.SelectedCity.Cinemas.Select(cinema => new SelectListItem(cinema.Name, cinema.Id.ToString())))
+        </td>
+        <td>
+            <button class="btn btn-default btn-primary" asp-action="Index">Apply</button>
+        </td>
+    </tr>
+</table>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.MovieType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Metadata)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Movie)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CinemaHall)
+                @Html.DisplayNameFor(model => model.MovieType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Program)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CinemaHall.Cinema)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model.Movies.Where(ms => ms.CinemaHall.CinemaId == Model.SelectedCinema.Id)) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Movie.Name)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.MovieType)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Metadata)
+                @Html.DisplayFor(modelItem => item.CinemaHall.Cinema.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Movie.ImdbId)
+                <table class="table">
+                    <tbody>
+                        @foreach (var prog in item.Program)
+                        {
+                            <tr>
+                                <td><b>@Html.DisplayFor(modelItem => prog.Key)</b></td>
+                                <td>
+                                    <table class="table">
+                                        <tbody>
+                                            @foreach (var grp in prog.Value.GroupBy(sd => sd.Price).OrderBy(g => g.Key))
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.Raw(string.Join(", ", grp.Select(sd => sd.ShortTime)))
+                                                    </td>
+                                                    <td><b>@Html.DisplayFor(modelItem => grp.Key) lei</b></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CinemaHall.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |*@
+                <a asp-action="Details" asp-controller="Movie" asp-route-id="@item.Id">Detalii</a>
+                @*<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
             </td>
         </tr>
 }

@@ -26,8 +26,8 @@ namespace CinemaScheduler.App.Entities
 
         #endregion
 
-        public City City { get; set; }
+        public virtual City City { get; set; }
 
-        public ICollection<CinemaHall> CinemaHalls { get; set; }
+        public virtual ICollection<CinemaHall> CinemaHalls { get; set; }
     }
 }

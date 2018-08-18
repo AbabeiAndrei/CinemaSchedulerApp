@@ -36,6 +36,8 @@ namespace CinemaScheduler.App.Models
             }
         }
 
+        public virtual long Ticks => TimeSpan.Ticks;
+
         protected virtual TimeSpan TimeSpan => TimeSpan.FromHours(Hour).Add(TimeSpan.FromMinutes(Minute));
 
         #endregion

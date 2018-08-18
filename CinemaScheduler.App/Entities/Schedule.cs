@@ -22,6 +22,6 @@ namespace CinemaScheduler.App.Entities
 
         public string PhoneNumber { get; set; }
 
-        public MovieSchedule MovieSchedule { get; set; }
+        public virtual  MovieSchedule MovieSchedule { get; set; }
     }
 }

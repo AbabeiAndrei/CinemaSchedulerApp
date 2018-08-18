@@ -1,0 +1,124 @@
+﻿@model MovieBuyModel
+
+@{
+    ViewData["Title"] = Model.Movie.Movie.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Movie.Movie.Name</h2>
+
+<div>
+    <h4>Cumpara bilet pentru @Model.Movie.Movie.Name</h4>
+    <h5>@Model.Day la ora @Model.Schedule.ShortTime</h5>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <div class="screen">Ecran</div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <table class="seatsMap">
+                    <tbody>
+                        @{var seatsSquare = (int)Math.Sqrt(Model.Movie.CinemaHall.NumberOfSeats);}
+                        @for (var i = 0; i < seatsSquare; i++)
+                        {
+                            <tr class="seats-row">
+                                <td class="row-header">@((char)('A' + i))</td>
+                                @for (var j = 0; j < seatsSquare / 2; j++)
+                                {
+                                    <td>
+                                        @*<button class="seat btn btn-info" asp-for="SeatNumber" value="@i - @j">@j</button>*@
+
+                                        <label class="btn btn-info btn-sm seat">
+                                            <input type="radio"
+                                                   name="options"
+                                                   id="@("options" + i + j)"
+                                                   autocomplete="off"
+                                                   asp-for="SeatNumber"
+                                                   value="@(i.ToString() + j)">
+                                            @j
+                                        </label>
+                                    </td>
+                                }
+                                <td style="padding: 0 12px"></td>
+                                @for (var j = seatsSquare / 2; j < seatsSquare; j++)
+                                {
+                                    <td>
+
+                                        <label class="btn btn-info btn-sm seat">
+                                            <input type="radio"
+                                                   name="options"
+                                                   id="@("options" + i + j)"
+                                                   autocomplete="off"
+                                                   asp-for="SeatNumber"
+                                                   value="@(i.ToString() + j)">
+                                            @j
+                                        </label>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3>Introdu datele pentru cumpararea biletului</h3>
+            <h4><b>@Model.Schedule.PriceTag</b></h4>
+            <dl class="dl-horizontal">
+                <dt>Nume</dt>
+                <dd><input type="text" asp-for="Name" class="form-control" value="@Model.Name" id="name" required/></dd>
+
+                <dt>Email</dt>
+                <dd><input type="email" asp-for="Email" class="form-control" value="@Model.Email" id="email" required/>)</dd>
+
+                <dt>Telefon</dt>
+                <dd><input type="tel" asp-for="Phone" class="form-control" value="@Model.Phone" id="phone" required/></dd>
+
+                <dt>Card</dt>
+                <dd><input type="number" asp-for="CardNumber" class="form-control" value="@Model.CardNumber" id="cardNumber" required/></dd>
+
+                <dt>Expira</dt>
+                <dd><input type="text" asp-for="CardExpire" class="form-control" value="@Model.CardExpire" id="cardExpire" required/></dd>
+
+                <dt>CCV</dt>
+                <dd><input type="number" asp-for="CardCcv" class="form-control" value="@Model.CardCcv" id="cardCcv" required/></dd>
+
+            </dl>
+
+
+            <button class="btn btn-primary" id="payBtn">Cumpara</button>
+        </div>
+    </div>
+</div>
+<div>
+    <a asp-action="Details">Inapoi</a>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        $(function() {
+
+            $("#payBtn").click(function(evt) {
+                evt.preventDefault();
+
+                var body = {
+                    id : "@Model.Movie.Id",
+                    day : "@Model.Day",
+                    time : "@Model.Schedule.ShortTime",
+                    name: $('#name')[0].value,
+                    email: $('#email')[0].value,
+                    phone: $('#phone')[0].value,
+                    cardNumber: $('#cardNumber')[0].value,
+                    cardExpire: $('#cardExpire')[0].value,
+                    cardCcv: $('#cardCcv')[0].value,
+                    seatNumber: $(".seat.active > input[type='radio']")[0].value
+                };
+
+                if (body.seatNumber == "") {
+                    alert("Alege un loc in sala");
+                    return;
+                }
+
+                window.location = "Pay?data=" + encodeURI(JSON.stringify(body));
+            });
+        });
+    </script>
+}

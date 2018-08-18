@@ -145,6 +145,9 @@ namespace CinemaScheduler.App.Data
         /// <inheritdoc />
         public DbSet<Schedule> Schedules => Set<Schedule>();
 
+        /// <inheritdoc />
+        public DbSet<CinemaScheduler.App.Models.MovieDetailsModel> MovieDetailsModel { get; set; }
+
         #endregion
     }
 }

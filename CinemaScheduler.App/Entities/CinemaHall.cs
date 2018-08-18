@@ -14,8 +14,8 @@ namespace CinemaScheduler.App.Entities
 
         public bool Closed { get; set; } 
 
-        public Cinema Cinema { get; set; }
+        public virtual Cinema Cinema { get; set; }
 
-        public ICollection<MovieSchedule> MovieSchedules { get; set; }
+        public virtual ICollection<MovieSchedule> MovieSchedules { get; set; }
     }
 }

@@ -8,6 +8,6 @@ namespace CinemaScheduler.App.Entities
 
         public string Name { get; set; }
 
-        public ICollection<Cinema> Cinemas { get; set; }
+        public virtual ICollection<Cinema> Cinemas { get; set; }
     }
 }
