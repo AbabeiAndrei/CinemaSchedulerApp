@@ -1,10 +1,10 @@
-﻿
+﻿@model ScheduleModel
 @{
     ViewData["Title"] = "Pay";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Ati cumparat cu successs biletul.</h2>
+<h2>Ati <b>@Model.PaidLiteral</b> cu successs biletul.</h2>
 <h3>Veti primi un email cu biletul atasat.</h3>
 
 <p>Vizionare placuta</p>

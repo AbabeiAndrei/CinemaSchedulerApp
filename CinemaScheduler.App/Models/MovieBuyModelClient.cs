@@ -39,5 +39,7 @@ namespace CinemaScheduler.App.Models
         public string CardCcv { get; set; }
 
         public string SeatNumber { get; set; }
+
+        public bool Paid { get; set; }
     }
 }

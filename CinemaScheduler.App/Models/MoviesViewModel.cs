@@ -8,7 +8,7 @@ namespace CinemaScheduler.App.Models
     {
         public IEnumerable<MovieSchedule> Movies { get; set; }
         public IEnumerable<City> Cities { get; set; }
-        public City SelectedCity { get; set; }
-        public Cinema SelectedCinema { get; set; }
+        public int SelectedCity { get; set; }
+        public int SelectedCinema { get; set; }
     }
 }

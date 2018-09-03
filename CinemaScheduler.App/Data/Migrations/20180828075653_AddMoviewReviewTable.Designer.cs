@@ -4,14 +4,16 @@ using CinemaScheduler.App.Data;
 using CinemaScheduler.App.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CinemaScheduler.App.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180828075653_AddMoviewReviewTable")]
+    partial class AddMoviewReviewTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,8 +100,6 @@ namespace CinemaScheduler.App.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreatedAt");
-
                     b.Property<int>("MovieId");
 
                     b.Property<string>("Review")
@@ -114,7 +114,7 @@ namespace CinemaScheduler.App.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MovieReviews");
+                    b.ToTable("MovieReview");
                 });
 
             modelBuilder.Entity("CinemaScheduler.App.Entities.MovieSchedule", b =>
@@ -347,7 +347,6 @@ namespace CinemaScheduler.App.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("FullName");
 
                     b.ToTable("ApplicationUser");
 

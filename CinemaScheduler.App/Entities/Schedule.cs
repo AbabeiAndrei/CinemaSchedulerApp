@@ -2,6 +2,8 @@
 
 using CinemaScheduler.App.Models;
 
+using DayOfWeek = CinemaScheduler.App.Models.DayOfWeek;
+
 namespace CinemaScheduler.App.Entities
 {
     public class Schedule
@@ -22,6 +24,10 @@ namespace CinemaScheduler.App.Entities
 
         public string PhoneNumber { get; set; }
 
-        public virtual  MovieSchedule MovieSchedule { get; set; }
+        public virtual MovieSchedule MovieSchedule { get; set; }
+
+        public virtual DayOfWeek ReservedForDay { get; set; }
+
+        public virtual string ReservedForTime { get; set; }
     }
 }

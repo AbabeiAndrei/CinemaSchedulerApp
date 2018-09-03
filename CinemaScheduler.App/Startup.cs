@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using CinemaScheduler.App.Data;
+using CinemaScheduler.App.Entities;
 using CinemaScheduler.App.Services;
 using CinemaScheduler.App.Entities.Repository;
 using CinemaScheduler.App.Services.Interfaces;
@@ -43,7 +44,7 @@ namespace CinemaScheduler.App
                 options.UseLazyLoadingProxies();
             });
             
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<ApplicationUser>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders();
 
@@ -52,12 +53,12 @@ namespace CinemaScheduler.App
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 4;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = true;
+                options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
-                options.Password.RequiredUniqueChars = 6;
+                options.Password.RequiredUniqueChars = 4;
 
                 // Lockout settings
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
@@ -93,10 +94,14 @@ namespace CinemaScheduler.App
             services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
             
             services.AddTransient<IImdbService, ImdbService>(provider => new ImdbService(apikey));
+            services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddTransient<IMovieRepository, MovieRepository>();
             services.AddTransient<IMovieScheduleRepository, MovieScheduleRepository>();
             services.AddTransient<ICitiesRepository, CitiesRepository>();
+            services.AddTransient<IScheduleRepository, ScheduleRepository>();
+            services.AddTransient<IMovieReviewRepository, MovieReviewRepository>();
+            services.AddTransient<ICinemaRepository, CinemaRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

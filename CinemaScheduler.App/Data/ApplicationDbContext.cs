@@ -115,10 +115,29 @@ namespace CinemaScheduler.App.Data
                 entity.Property(e => e.FullName).IsRequired();
                 entity.Property(e => e.Email).IsRequired();
                 entity.Property(e => e.PhoneNumber).IsRequired();
+                entity.Property(e => e.ReservedForDay).IsRequired();
+                entity.Property(e => e.ReservedForTime).IsRequired();
 
                 entity.HasOne(e => e.MovieSchedule)
                       .WithMany(e => e.Schedules)
                       .HasForeignKey(e => e.MovieScheduleId)
+                      .IsRequired();
+            });
+
+            builder.Entity<MovieReview>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Review).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired();
+
+                entity.HasOne(e => e.Movie)
+                      .WithMany(e => e.Reviews)
+                      .HasForeignKey(e => e.MovieId)
+                      .IsRequired();
+
+                entity.HasOne(e => e.User)
+                      .WithMany(e => e.Reviews)
+                      .HasForeignKey(e => e.UserId)
                       .IsRequired();
             });
         }
@@ -126,27 +145,27 @@ namespace CinemaScheduler.App.Data
         #endregion
 
         #region Implementation of IApplicationDbContext
-
-        /// <inheritdoc />
+        
         public DbSet<Cinema> Cinemas => Set<Cinema>();
-
-        /// <inheritdoc />
+        
         public DbSet<CinemaHall> CinemaHalls => Set<CinemaHall>();
-
-        /// <inheritdoc />
+        
         public DbSet<City> Cities => Set<City>();
-
-        /// <inheritdoc />
+        
         public DbSet<Movie> Movies => Set<Movie>();
-
-        /// <inheritdoc />
+        
         public DbSet<MovieSchedule> MovieSchedules => Set<MovieSchedule>();
-
-        /// <inheritdoc />
+        
         public DbSet<Schedule> Schedules => Set<Schedule>();
 
-        /// <inheritdoc />
-        public DbSet<CinemaScheduler.App.Models.MovieDetailsModel> MovieDetailsModel { get; set; }
+        public new DbSet<ApplicationUser> Users => Set<ApplicationUser>();
+
+        public DbSet<MovieReview> MovieReviews => Set<MovieReview>();
+
+        public void Save()
+        {
+            SaveChanges();
+        }
 
         #endregion
     }

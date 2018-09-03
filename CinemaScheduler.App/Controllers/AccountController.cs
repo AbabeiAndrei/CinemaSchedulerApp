@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 
 using CinemaScheduler.App.Data;
+using CinemaScheduler.App.Entities;
 using CinemaScheduler.App.Models;
 using CinemaScheduler.App.Services.Interfaces;
 
@@ -12,15 +13,23 @@ namespace CinemaScheduler.App.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AccountController(SignInManager<IdentityUser> signInManager)
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
         }
         
         [AllowAnonymous]
         public IActionResult Login()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public IActionResult Register()
         {
             return View();
         }
@@ -43,6 +52,32 @@ namespace CinemaScheduler.App.Controllers
                 return RedirectToAction("Index", "Cinema");
 
             ModelState.AddModelError(string.Empty, "Username or password is incorect");
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register(RegisterModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            
+            var user = new ApplicationUser(model.Username)
+            {
+                Email = model.Email,
+                FullName = model.Name
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+            
+            if (result.Succeeded)
+                return RedirectToAction("Login");
+
+            foreach (var error in result.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
+
             return View();
         }
         

@@ -4,14 +4,16 @@ using CinemaScheduler.App.Data;
 using CinemaScheduler.App.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CinemaScheduler.App.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180825141117_AddedReservedForDayAndTime")]
+    partial class AddedReservedForDayAndTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,30 +95,6 @@ namespace CinemaScheduler.App.Migrations
                     b.ToTable("Movies");
                 });
 
-            modelBuilder.Entity("CinemaScheduler.App.Entities.MovieReview", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<int>("MovieId");
-
-                    b.Property<string>("Review")
-                        .IsRequired();
-
-                    b.Property<string>("UserId")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("MovieReviews");
-                });
-
             modelBuilder.Entity("CinemaScheduler.App.Entities.MovieSchedule", b =>
                 {
                     b.Property<int>("Id")
@@ -177,6 +155,30 @@ namespace CinemaScheduler.App.Migrations
                     b.ToTable("Schedules");
                 });
 
+            modelBuilder.Entity("CinemaScheduler.App.Models.MovieDetailsModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<TimeSpan>("Duration");
+
+                    b.Property<string>("ImageSource");
+
+                    b.Property<string>("ImdbId");
+
+                    b.Property<int?>("MovieId");
+
+                    b.Property<float>("Rate");
+
+                    b.Property<int>("SelectedDay");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("MovieDetailsModel");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -229,9 +231,6 @@ namespace CinemaScheduler.App.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -270,8 +269,6 @@ namespace CinemaScheduler.App.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -343,17 +340,6 @@ namespace CinemaScheduler.App.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("CinemaScheduler.App.Entities.ApplicationUser", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<string>("FullName");
-
-                    b.ToTable("ApplicationUser");
-
-                    b.HasDiscriminator().HasValue("ApplicationUser");
-                });
-
             modelBuilder.Entity("CinemaScheduler.App.Entities.Cinema", b =>
                 {
                     b.HasOne("CinemaScheduler.App.Entities.City", "City")
@@ -367,19 +353,6 @@ namespace CinemaScheduler.App.Migrations
                     b.HasOne("CinemaScheduler.App.Entities.Cinema", "Cinema")
                         .WithMany("CinemaHalls")
                         .HasForeignKey("CinemaId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("CinemaScheduler.App.Entities.MovieReview", b =>
-                {
-                    b.HasOne("CinemaScheduler.App.Entities.Movie", "Movie")
-                        .WithMany("Reviews")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("CinemaScheduler.App.Entities.ApplicationUser", "User")
-                        .WithMany("Reviews")
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -402,6 +375,13 @@ namespace CinemaScheduler.App.Migrations
                         .WithMany("Schedules")
                         .HasForeignKey("MovieScheduleId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("CinemaScheduler.App.Models.MovieDetailsModel", b =>
+                {
+                    b.HasOne("CinemaScheduler.App.Entities.MovieSchedule", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

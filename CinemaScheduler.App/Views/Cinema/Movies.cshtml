@@ -1,55 +1,69 @@
-﻿@model MoviesViewModel
+﻿@using Newtonsoft.Json
+@model MoviesViewModel
+
 
 <table class="table">
     <tr>
         <td>Oras</td>
         <td>
-            @Html.DropDownListFor(model => model.SelectedCity, 
-                                  Model.Cities.Select(city => new SelectListItem(city.Name, city.Id.ToString())))
+            <select class="form-control" id="city-select" onchange="cityChange()">
+                <option value="0">Toate</option>
+            </select>
         </td>
         <td>Cinema</td>
         <td>
-            @Html.DropDownListFor(model => model.SelectedCinema,
-                                  Model.SelectedCity.Cinemas.Select(cinema => new SelectListItem(cinema.Name, cinema.Id.ToString())))
+            <select class="form-control" id="cinema-select">
+                <option value="0">Toate</option>
+            </select>
         </td>
         <td>
-            <button class="btn btn-default btn-primary" asp-action="Index">Apply</button>
+            <button class="btn btn-default btn-primary" onclick="performFilter()">
+                Apply
+            </button>
         </td>
     </tr>
 </table>
-<table class="table">
-    <thead>
+@if( !Model.Movies.Any())
+{
+    <hr/>
+    <p class="text-center">Niciun film gasit</p>
+}
+else
+{
+    <table class="table">
+        <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Movie)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.MovieType)
+                @Html.DisplayNameFor(model => model.Program)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Program)
+                @Html.DisplayNameFor(model => model.MovieType)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CinemaHall.Cinema)
             </th>
             <th></th>
         </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model.Movies.Where(ms => ms.CinemaHall.CinemaId == Model.SelectedCinema.Id)) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Movie.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MovieType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CinemaHall.Cinema.Name)
-            </td>
-            <td>
-                <table class="table">
-                    <tbody>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Movies)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Movie.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MovieType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CinemaHall.Cinema.Name)
+                </td>
+                <td>
+                    <table class="table">
+                        <tbody>
                         @foreach (var prog in item.Program)
                         {
                             <tr>
@@ -57,29 +71,107 @@
                                 <td>
                                     <table class="table">
                                         <tbody>
-                                            @foreach (var grp in prog.Value.GroupBy(sd => sd.Price).OrderBy(g => g.Key))
-                                            {
-                                                <tr>
-                                                    <td>
-                                                        @Html.Raw(string.Join(", ", grp.Select(sd => sd.ShortTime)))
-                                                    </td>
-                                                    <td><b>@Html.DisplayFor(modelItem => grp.Key) lei</b></td>
-                                                </tr>
-                                            }
+                                        @foreach (var grp in prog.Value.GroupBy(sd => sd.Price).OrderBy(g => g.Key))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.Raw(string.Join(", ", grp.Select(sd => sd.ShortTime)))
+                                                </td>
+                                                <td><b>@Html.DisplayFor(modelItem => grp.Key) lei</b></td>
+                                            </tr>
+                                        }
                                         </tbody>
                                     </table>
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </td>
-            <td>
-                @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |*@
-                <a asp-action="Details" asp-controller="Movie" asp-route-id="@item.Id">Detalii</a>
-                @*<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
-            </td>
-        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td>
+                    @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |*@
+                    <a asp-action="Details" asp-controller="Movie" asp-route-id="@item.Id">Detalii</a>
+                    @*<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }
-    </tbody>
-</table>
+
+
+<script type="text/javascript">
+    window.cities =
+        @Html.Raw(Json.Serialize(Model.Cities.Select(c => new CityModel(c)), 
+                                 new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore}));
+
+    var select = document.getElementById('city-select');
+
+    for (var i = 0; i < window.cities.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = window.cities[i].Id;
+        opt.innerHTML = window.cities[i].Name;
+        select.appendChild(opt);
+    }
+
+    var citySelect = document.getElementById("city-select");
+    var cinemaSelect = document.getElementById("cinema-select");
+
+    //Set selected
+    setSelectedValue(citySelect, @Model.SelectedCity);
+    if (@Model.SelectedCity != 0)
+        cityChange();
+    setSelectedValue(cinemaSelect , @Model.SelectedCinema);
+
+    function cityChange() {
+        var element = document.getElementById("city-select");
+        var sel = element.options[element.selectedIndex].value;
+        if (sel === "0")
+            setCinema([]);
+        else 
+            for (var i = 0; i < window.cities.length; i++) 
+                if (window.cities[i].Id == sel) {
+                    setCinema(window.cities[i].Cinemas);
+                    return;
+                }
+    }
+
+    function setCinema(cinemas) {
+        var select = document.getElementById('cinema-select');
+
+        for (var i = select.options.length - 1 ; i >= 0 ; i--)
+            select.remove(i);
+        
+        var opt = document.createElement('option');
+        opt.value = 0;
+        opt.innerHTML = "Toate";
+        select.appendChild(opt);
+        
+        for (var i = 0; i < cinemas.length; i++) {
+            opt = document.createElement('option');
+            opt.value = cinemas[i].Id;
+            opt.innerHTML = cinemas[i].Name;
+            select.appendChild(opt);
+        }
+    }
+
+    function performFilter() {
+        var cityElement = document.getElementById("city-select");
+        var cityId = cityElement.options[cityElement.selectedIndex].value;
+        
+        var cinemaElement = document.getElementById("cinema-select");
+        var cinemaId = cinemaElement.options[cinemaElement.selectedIndex].value;
+
+        window.location = "/Cinema/Filtred?city=" + cityId + "&cinema=" + cinemaId;
+    }
+    
+    function setSelectedValue(selectObj, valueToSet) {
+        for (var i = 0; i < selectObj.options.length; i++) {
+            if (selectObj.options[i].value == valueToSet) {
+                selectObj.options[i].selected = true;
+                return;
+            }
+        }
+    }
+</script>
+

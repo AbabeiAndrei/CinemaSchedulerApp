@@ -10,6 +10,8 @@ body {
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, .95);
 }
 
 /* Carousel */
@@ -57,4 +59,61 @@ body {
 
 .seat > input[type="radio"] {
     display: none
+}
+
+.review.row {
+    margin-left: 0;
+    padding-left: 14px;
+    border-left: 1px black solid;
+    margin-bottom: 5px;
+    background-color: #d0d0d0;
+    background-color: rgba(239, 239, 239, 0.88);
+}
+
+a.play {
+    width: 50px;
+    position: absolute;
+    left: 10em;
+    top: 178px;
+    -ms-border-radius: 50px;
+    border-radius: 50px;
+    border: 2px #ffffff solid;
+    border: 2px rgba(255, 255, 255, .5) solid;
+    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, .5);
+}
+
+#bannerformmodal iframe {
+    padding-right: 20px;
+}
+
+.add-review div {
+    padding-bottom: 10px;
+}
+
+.contacts {
+    display: flex;
+    -moz-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    -o-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -moz-flex-flow: row wrap;
+    -ms-flex-flow: row wrap;
+    -o-flex-flow: row wrap;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+}
+
+.contact-item {
+    margin: 16px;
+    padding: 16px;
+    width: 160px;
+    background-color: #000000;
+    background-color: rgba(0, 0, 0, .04);
+}
+
+body.bk {
+    background-image: url("/images/bk_bw.jpg");
+    background-repeat: repeat;
 }

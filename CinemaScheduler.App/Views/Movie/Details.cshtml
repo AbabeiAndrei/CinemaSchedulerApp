@@ -1,4 +1,5 @@
-﻿@using CinemaScheduler.App.Services.Utils
+﻿@using System.Security.Claims
+@using CinemaScheduler.App.Services.Utils
 @model MovieDetailsModel
 
 @{
@@ -12,6 +13,9 @@
     <hr />
     <div class="row">
         <div class="col-md-3">
+            <a href="#bannerformmodal" data-toggle="modal" data-target="#bannerformmodal" class="play">
+                <img src="~/images/play.svg" alt="play" />
+            </a>
             <img src="@Model.ImageSource" alt="poster" />
         </div>
         <div class="col-md-9">
@@ -66,10 +70,64 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-11">
+                    <h3>Recenzii</h3>
+                    @if (User.FindFirst(ClaimTypes.NameIdentifier) != null)
+                    {
+                        <div class="add-review form-group">
+                            <div>
+                                <label>Lasa o recenzie</label>
+                                <textarea id="new-review" class="form-control rounded-0"></textarea>
+                            </div>
+
+                            <button id="add-review" class="btn btn-success">Adauga</button>
+                        </div>
+                    }
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <div class="row review">
+                            <h4>@review.User.UserName <span class="small">at @review.CreatedAt.ToShortDateString()</span></h4>
+                            <p>@review.Review</p>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<div>
-    <a asp-action="Buy" asp-route-id="@Model.Id">Cumpara bilet</a> |
-    <a asp-action="Index" asp-controller="Cinema">Inapoi</a>
+<div class="modal fade bannerformmodal" tabindex="-1" role="dialog" aria-labelledby="bannerformmodal" aria-hidden="true" id="bannerformmodal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">@Model.Movie.Movie.Name</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <iframe width="560" height="315" src="@Model.Trailer" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen class="youtube-video"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+@section Scripts
+{
+    <script type="text/javascript">
+        $("#bannerformmodal").on("hidden.bs.modal", function () {
+            $('#bannerformmodal div.modal-body iframe').attr("src", $("#bannerformmodal div.modal-body iframe").attr("src"));
+        });
+        $('#add-review').click(function() {
+            var review = ($('#new-review')[0].value || "").trim();
+
+            if (review.length <= 0)
+                return;
+
+            window.location = "Review/@Model.Movie.Id?review=" + encodeURI(review);
+        });
+    </script>
+}

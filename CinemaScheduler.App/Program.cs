@@ -26,7 +26,7 @@ namespace CinemaScheduler.App
                 try
                 {
                     var seeder = services.GetRequiredService<ISeeder>();
-                    seeder.Seed();
+                    //ExecuteSeeder(seeder).ConfigureAwait(true).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
@@ -36,6 +36,12 @@ namespace CinemaScheduler.App
             }
 
             host.Run();
+        }
+
+        private static async Task ExecuteSeeder(ISeeder seeder)
+        {
+            await seeder.UpdateDb();
+            await seeder.Seed();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)

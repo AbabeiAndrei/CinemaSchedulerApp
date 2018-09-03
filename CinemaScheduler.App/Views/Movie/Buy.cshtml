@@ -1,5 +1,14 @@
 ﻿@model MovieBuyModel
 
+@functions {
+    private bool Free(int row, int seat)
+    {
+        var seatConcat = row + "," + seat;
+        return Model?.Seats.Any(s => s == seatConcat) ?? true;
+    }
+
+}
+
 @{
     ViewData["Title"] = Model.Movie.Movie.Name;
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -26,14 +35,17 @@
                                 {
                                     <td>
                                         @*<button class="seat btn btn-info" asp-for="SeatNumber" value="@i - @j">@j</button>*@
-
-                                        <label class="btn btn-info btn-sm seat">
-                                            <input type="radio"
-                                                   name="options"
-                                                   id="@("options" + i + j)"
-                                                   autocomplete="off"
-                                                   asp-for="SeatNumber"
-                                                   value="@(i.ToString() + j)">
+                                        @{ var ocupied = Free(i, j);}
+                                        <label class="btn btn-sm seat @(ocupied ? "btn-danger disabled" : "btn-info")">
+                                            @if (!ocupied)
+                                            {
+                                                <input type="radio"
+                                                       name="options"
+                                                       id="@("options" + i + j)"
+                                                       autocomplete="off"
+                                                       asp-for="SeatNumber"
+                                                       value="@(i.ToString() + j)"/>
+                                            }
                                             @j
                                         </label>
                                     </td>
@@ -41,18 +53,21 @@
                                 <td style="padding: 0 12px"></td>
                                 @for (var j = seatsSquare / 2; j < seatsSquare; j++)
                                 {
-                                    <td>
-
-                                        <label class="btn btn-info btn-sm seat">
+                                <td>
+                                    @{ var ocupied = Free(i, j);}
+                                    <label class="btn btn-sm seat @(ocupied ? "btn-danger disabled" : "btn-info")">
+                                        @if (!ocupied)
+                                        {
                                             <input type="radio"
                                                    name="options"
                                                    id="@("options" + i + j)"
                                                    autocomplete="off"
                                                    asp-for="SeatNumber"
-                                                   value="@(i.ToString() + j)">
-                                            @j
-                                        </label>
-                                    </td>
+                                                   value="@(i + "," + j)">
+                                        }
+                                        @j
+                                    </label>
+                                </td>
                                 }
                             </tr>
                         }
@@ -68,7 +83,7 @@
                 <dd><input type="text" asp-for="Name" class="form-control" value="@Model.Name" id="name" required/></dd>
 
                 <dt>Email</dt>
-                <dd><input type="email" asp-for="Email" class="form-control" value="@Model.Email" id="email" required/>)</dd>
+                <dd><input type="email" asp-for="Email" class="form-control" value="@Model.Email" id="email" required/></dd>
 
                 <dt>Telefon</dt>
                 <dd><input type="tel" asp-for="Phone" class="form-control" value="@Model.Phone" id="phone" required/></dd>
@@ -85,6 +100,7 @@
             </dl>
 
 
+            <button class="btn btn-primary" id="payReserve">Rezerva</button>
             <button class="btn btn-primary" id="payBtn">Cumpara</button>
         </div>
     </div>
@@ -99,26 +115,42 @@
             $("#payBtn").click(function(evt) {
                 evt.preventDefault();
 
-                var body = {
-                    id : "@Model.Movie.Id",
-                    day : "@Model.Day",
-                    time : "@Model.Schedule.ShortTime",
-                    name: $('#name')[0].value,
-                    email: $('#email')[0].value,
-                    phone: $('#phone')[0].value,
-                    cardNumber: $('#cardNumber')[0].value,
-                    cardExpire: $('#cardExpire')[0].value,
-                    cardCcv: $('#cardCcv')[0].value,
-                    seatNumber: $(".seat.active > input[type='radio']")[0].value
-                };
+                pay(true);
+            });
+            $("#payReserve").click(function (evt) {
+                evt.preventDefault();
 
-                if (body.seatNumber == "") {
-                    alert("Alege un loc in sala");
-                    return;
-                }
-
-                window.location = "Pay?data=" + encodeURI(JSON.stringify(body));
+                pay(false);
             });
         });
+
+        function pay(paid) {
+            var body = {
+                id : "@Model.Movie.Id",
+                day : "@Model.Day",
+                time : "@Model.Schedule.ShortTime",
+                name: $('#name')[0].value,
+                email: $('#email')[0].value,
+                phone: $('#phone')[0].value,
+                cardNumber: $('#cardNumber')[0].value,
+                cardExpire: $('#cardExpire')[0].value,
+                cardCcv: $('#cardCcv')[0].value,
+                seatNumber: $(".seat.active > input[type='radio']")[0].value || "",
+                paid: paid
+            };
+                
+            if (body.seatNumber === "") {
+                alert("Alege un loc in sala");
+                return;
+            } if (body.name === "") {
+                alert("Introduceti numele");
+                return;
+            } if (body.email === "") {
+                alert("Introduceti email-ul");
+                return;
+            }
+
+            window.location = "Pay?data=" + encodeURI(JSON.stringify(body));
+        }
     </script>
 }
